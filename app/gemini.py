@@ -20,8 +20,13 @@ def get_client() -> genai.Client:
         )
     return genai.Client(
         api_key=settings.gemini_api_key,
-        # The SDK retries rate limits (429) and server errors with backoff for us.
+        # The SDK retries rate limits (429) and server errors with exponential backoff
+        # (2s, 4s, 8s, ... capped), so callers don't need their own retry loops.
         http_options=types.HttpOptions(
-            retry_options=types.HttpRetryOptions(attempts=settings.llm_retry_attempts)
+            retry_options=types.HttpRetryOptions(
+                attempts=settings.llm_retry_attempts,
+                initial_delay=2.0,
+                max_delay=settings.llm_retry_max_delay_seconds,
+            )
         ),
     )

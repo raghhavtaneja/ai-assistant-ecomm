@@ -1,3 +1,5 @@
+from types import SimpleNamespace
+
 import pytest
 
 from app import embeddings, gemini
@@ -38,6 +40,24 @@ def test_batches_split_and_keep_order(
     assert [len(b) for b in fake_api] == [2, 2, 1]
     # Vector i comes from input i: each fake vector encodes its input's length.
     assert vectors == [[float(len(f"title: none | text: {'a' * n}"))] for n in range(1, 6)]
+
+
+def test_each_text_is_sent_as_its_own_content(monkeypatch: pytest.MonkeyPatch) -> None:
+    # Regression: a bare list of strings made the API return ONE embedding for the batch.
+    sent: dict = {}
+
+    class FakeModels:
+        def embed_content(self, model: str, contents: list, config: object) -> SimpleNamespace:
+            sent["contents"] = contents
+            return SimpleNamespace(embeddings=[SimpleNamespace(values=[1.0]) for _ in contents])
+
+    monkeypatch.setattr(embeddings, "get_client", lambda: SimpleNamespace(models=FakeModels()))
+    embeddings.embed_documents([("", "a"), ("", "b")])
+
+    assert [c.parts[0].text for c in sent["contents"]] == [
+        "title: none | text: a",
+        "title: none | text: b",
+    ]
 
 
 def test_missing_api_key_gives_clear_error(monkeypatch: pytest.MonkeyPatch) -> None:

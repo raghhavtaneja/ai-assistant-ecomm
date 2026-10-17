@@ -22,7 +22,10 @@ class Settings(BaseSettings):
     # Changing it means re-indexing: old and new vectors can't be compared.
     embedding_dimensions: int = 768
     embedding_batch_size: int = 100
-    llm_retry_attempts: int = 3
+    # Gemini's free tier counts every embedded text as a request (100/min), so a store
+    # index can hit 429s. Backing off up to a minute rides out one quota window.
+    llm_retry_attempts: int = 6
+    llm_retry_max_delay_seconds: float = 60.0
 
     database_path: Path = Path("data/app.db")
     log_level: str = "INFO"

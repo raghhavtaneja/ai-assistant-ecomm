@@ -30,10 +30,13 @@ def _query_input(query: str) -> str:
 
 def _embed_batch(inputs: list[str]) -> list[list[float]]:
     """One API call. Kept separate so tests can replace it without a network."""
+    # Each text must be its own Content. A bare list of strings is read by this multimodal
+    # model as the parts of ONE input, returning a single embedding for the whole batch.
+    contents = [types.Content(parts=[types.Part(text=text)]) for text in inputs]
     try:
         result = get_client().models.embed_content(
             model=settings.embedding_model,
-            contents=inputs,
+            contents=contents,
             config=types.EmbedContentConfig(output_dimensionality=settings.embedding_dimensions),
         )
     except errors.APIError as exc:
