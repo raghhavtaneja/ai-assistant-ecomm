@@ -28,5 +28,8 @@ class Settings(BaseSettings):
     crawl_max_pages: int = 200
     http_timeout_seconds: float = 20.0
 
+    # Retrieval tuning. Small enough to be specific, big enough to keep a FAQ answer whole.
+    chunk_max_chars: int = 1000
+
 
 settings = Settings()
