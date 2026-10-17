@@ -38,6 +38,11 @@ class Settings(BaseSettings):
 
     # Retrieval tuning. Small enough to be specific, big enough to keep a FAQ answer whole.
     chunk_max_chars: int = 1000
+    top_products: int = 5
+    top_chunks: int = 3
+    # Below this cosine score a match is treated as unrelated. On Minimalist, relevant hits
+    # scored 0.69-0.77 and off-topic ones 0.56-0.63. Tune with the evals, not by feel.
+    min_score: float = 0.65
 
 
 settings = Settings()

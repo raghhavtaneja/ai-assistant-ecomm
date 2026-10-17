@@ -43,3 +43,12 @@ class Chunk(BaseModel):
     text: str
     embedding: list[float] | None = None
     id: int | None = None
+
+
+class SearchResults(BaseModel):
+    """What retrieval hands to the answering step. Empty lists mean "nothing relevant"."""
+
+    products: list[Product] = Field(default_factory=list)
+    chunks: list[Chunk] = Field(default_factory=list)
+    # The product the shopper is looking at, if any; always included in `products` too.
+    current_product: Product | None = None

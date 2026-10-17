@@ -35,6 +35,9 @@ POLICY_KEYWORDS = (
     "payment", "warranty", "terms", "contact", "get-in-touch", "grievance",
 )  # fmt: skip
 MAX_TITLE_CHARS = 100
+# Pages built by JavaScript arrive as just "Loading..." or bare form labels. Text that
+# short carries no answer, yet scores as vaguely similar to everything during retrieval.
+MIN_PAGE_CHARS = 100
 
 
 def sitemap_locs(xml: str) -> list[str]:
@@ -102,7 +105,8 @@ def fetch_policy_chunks(
     for url in urls[: settings.crawl_max_pages]:
         text = fetch_page_text(client, url)
         time.sleep(delay)
-        if not text:
+        if not text or len(text) < MIN_PAGE_CHARS:
+            log.info("Skipping %s (no usable text, likely rendered by JavaScript)", url)
             continue
         # Stores often publish the same policy at two URLs; index it once.
         digest = hashlib.sha256(text.encode()).hexdigest()

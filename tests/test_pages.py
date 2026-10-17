@@ -13,15 +13,26 @@ PAGES_SITEMAP = f"""<urlset>
   <url><loc>{BASE}/pages/faqs</loc></url>
   <url><loc>{BASE}/pages/flat-200-off</loc></url>
   <url><loc>{BASE}/pages/return-policy-copy</loc></url>
+  <url><loc>{BASE}/pages/order-delivery</loc></url>
   <url><loc>https://evil.test/pages/faq</loc></url>
 </urlset>"""
 
-REFUND_HTML = "<header>Menu</header><main><h1>Refund policy</h1><p>Within 7 days.</p></main>"
+# Page bodies must be at least MIN_PAGE_CHARS long, like real policy pages.
+REFUND_TEXT = (
+    "Refund policy\nDamaged, expired, or wrong items can be returned within 7 days of delivery. "
+    "Email us with photos."
+)
+FAQ_TEXT = (
+    "FAQs\nDo you ship abroad? Yes, we ship to the US, UK, UAE, Malaysia, and Indonesia "
+    "from our nearest warehouse."
+)
+REFUND_HTML = f"<header>Menu</header><main>{REFUND_TEXT.replace(chr(10), '<br>')}</main>"
 PAGES = {
     "/policies/refund-policy": REFUND_HTML,
     "/pages/return-policy-copy": REFUND_HTML,  # same policy at a second URL
-    "/pages/faqs": "<main><h1>FAQs</h1><p>Do you ship abroad? Yes.</p></main>",
+    "/pages/faqs": f"<main>{FAQ_TEXT.replace(chr(10), '<br>')}</main>",
     "/pages/flat-200-off": "<main><h1>Flat 200 off</h1></main>",
+    "/pages/order-delivery": "<main><p>Loading form…</p></main>",  # rendered by JavaScript
 }
 
 
@@ -60,9 +71,10 @@ def test_fetch_policy_chunks_end_to_end() -> None:
     client, requested = _fake_store()
     chunks = fetch_policy_chunks(client, BASE, delay=0)
 
+    # The duplicate refund page and the near-empty "Loading form…" page are both dropped.
     assert [(c.source, c.text) for c in chunks] == [
-        (f"{BASE}/policies/refund-policy", "Refund policy\nWithin 7 days."),
-        (f"{BASE}/pages/faqs", "FAQs\nDo you ship abroad? Yes."),
+        (f"{BASE}/policies/refund-policy", REFUND_TEXT),
+        (f"{BASE}/pages/faqs", FAQ_TEXT),
     ]
     # Promo pages and other domains are never even requested.
     assert not any("flat-200-off" in url or "evil.test" in url for url in requested)
