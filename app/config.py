@@ -22,5 +22,11 @@ class Settings(BaseSettings):
     database_path: Path = Path("data/app.db")
     log_level: str = "INFO"
 
+    # Crawler politeness: identify ourselves, pause between requests, cap the work.
+    crawl_user_agent: str = "AISalesAssistantBot/0.1"
+    crawl_delay_seconds: float = 0.5
+    crawl_max_pages: int = 200
+    http_timeout_seconds: float = 20.0
+
 
 settings = Settings()

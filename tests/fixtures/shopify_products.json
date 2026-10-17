@@ -1,0 +1,39 @@
+{
+  "products": [
+    {
+      "title": "Hydrating Face Moisturizer",
+      "handle": "hydrating-face-moisturizer",
+      "body_html": "<p>A lightweight moisturizer with <strong>ceramides</strong>.</p><ul><li>Fragrance free</li><li>For dry skin</li></ul>",
+      "tags": ["moisturizer", "dry skin"],
+      "variants": [
+        {"title": "30g", "price": "269.00", "compare_at_price": "299.00", "available": false},
+        {"title": "50g", "price": "359.00", "compare_at_price": "399.00", "available": true}
+      ],
+      "images": [{"src": "https://cdn.shop.test/moisturizer.png"}]
+    },
+    {
+      "title": "Niacinamide 10% Serum",
+      "handle": "niacinamide-serum",
+      "body_html": "<p>Reduces blemishes.</p>",
+      "tags": ["serum"],
+      "variants": [{"title": "Default Title", "price": "599.00", "compare_at_price": null, "available": false}],
+      "images": []
+    },
+    {
+      "title": "Free Cleanser Mini",
+      "handle": "free-cleanser-mini",
+      "body_html": "",
+      "tags": ["freebie"],
+      "variants": [{"title": "Default Title", "price": "0.00", "compare_at_price": null, "available": true}],
+      "images": []
+    },
+    {
+      "title": "Kit as a Gift",
+      "handle": "kit-as-a-gift",
+      "body_html": "",
+      "tags": ["__hidden", "Gift"],
+      "variants": [{"title": "Default Title", "price": "699.00", "compare_at_price": null, "available": true}],
+      "images": []
+    }
+  ]
+}
