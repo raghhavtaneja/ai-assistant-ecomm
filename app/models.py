@@ -6,8 +6,16 @@ never changes these.
 """
 
 from datetime import datetime
+from typing import Literal
 
 from pydantic import BaseModel, Field
+
+
+class Message(BaseModel):
+    """One turn of a conversation, in provider-neutral form."""
+
+    role: Literal["user", "assistant"]
+    content: str
 
 
 class Site(BaseModel):

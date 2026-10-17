@@ -16,7 +16,14 @@ class Settings(BaseSettings):
     # Empty default so tests and offline commands work without a key;
     # the LLM/embedding modules check for it at call time and fail clearly.
     gemini_api_key: str = ""
-    chat_model: str = "gemini-3.8-flash"
+    # Flash-Lite: first token in ~1-2s vs ~3-20s for gemini-3.8-flash, with equally grounded
+    # answers on our sample questions. The spec wants < 2s. Let the evals decide any switch.
+    chat_model: str = "gemini-3.5-flash-lite"
+    # More thinking = slower first token. Note gemini-3.8-flash rejects "minimal"; use "low".
+    chat_thinking_level: str = "minimal"
+    chat_max_output_tokens: int = 1024
+    # Earlier turns sent with each request: enough for follow-ups, bounded for cost.
+    chat_history_turns: int = 6
     embedding_model: str = "gemini-embedding-2"
     # 768 keeps vectors small (3 KB each) with little quality loss vs the 3072 default.
     # Changing it means re-indexing: old and new vectors can't be compared.
