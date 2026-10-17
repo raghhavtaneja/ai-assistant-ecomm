@@ -13,8 +13,9 @@ A lightweight AI sales assistant widget for D2C websites. The owner gives a webs
 - This is a learning project. Add short comments that explain why, not what. Keep explanations of tricky parts brief.
 
 ## Stack (do not change without asking)
-- Python 3.11+, FastAPI, SQLite, `uv` for dependency management.
-- LLM: Anthropic API. Embeddings: a hosted embeddings API, wrapped behind one small function so it can be swapped.
+- Python 3.12+, FastAPI, SQLite via the stdlib `sqlite3` module (no ORM), `uv` for dependency management.
+- LLM and embeddings: Google Gemini via the `google-genai` SDK. Model names come from config.
+- Config: `pydantic-settings`, reading env vars and `.env`.
 - Landing and setup pages: static HTML, plain CSS, minimal vanilla JS. No frontend framework.
 - Widget: one vanilla JS file, no dependencies, Shadow DOM, under about 25 KB gzipped.
 - Streaming: Server-Sent Events.
@@ -27,6 +28,12 @@ A lightweight AI sales assistant widget for D2C websites. The owner gives a webs
 - Config comes from environment variables loaded in a single `app/config.py`. Never hardcode keys, URLs, or model names elsewhere.
 - Log with the standard `logging` module. No `print` in app code.
 - Handle errors at the edges (network, parsing, LLM calls) with clear messages. Do not swallow exceptions silently.
+
+## Swappable providers (keep it this way)
+- Each external dependency lives behind exactly one module: `app/llm.py` (chat), `app/embeddings.py` (embeddings), `app/db.py` (storage). Only these modules import the vendor SDK or `sqlite3`.
+- The rest of the code calls their plain functions and passes plain data (dicts, pydantic models, lists of floats). No SDK types leak out.
+- Switching a provider means rewriting one module and updating `app/config.py`. Nothing else changes.
+- Do not add base classes or plugin registries for this. Plain functions with a stable signature are enough until we really have two providers at once.
 
 ## Quality rules specific to this product
 - Prices, stock, links, and policies shown to shoppers must come from retrieved data or tool results, never from model memory.

@@ -69,11 +69,11 @@ A site owner gives us their website URL (and optionally PDFs and a persona). We 
 ```
 
 ### Suggested stack (change if you have a strong reason)
-- **Server:** Python with FastAPI, or Node with Hono. Pick one, not both.
-- **Database:** SQLite for v1 (Postgres with pgvector later). Use a lightweight vector option such as `sqlite-vec`, or plain cosine similarity in-process, since catalogs are small.
-- **LLM:** Claude via the Anthropic API for chat. Use a small, fast model by default.
-- **Embeddings:** any hosted embeddings API.
-- **Crawler:** simple fetch plus HTML-to-text extraction. Prefer `sitemap.xml` and structured data (JSON-LD `Product` schema, Open Graph tags), which D2C stores usually expose. Respect `robots.txt`. Cap pages crawled (e.g. 200).
+- **Server:** Python 3.12+ with FastAPI.
+- **Database:** SQLite via the stdlib `sqlite3` module, no ORM (Postgres with pgvector later). Embeddings are stored as BLOBs and searched with plain in-process cosine similarity, since catalogs are small.
+- **LLM:** Google Gemini via the `google-genai` SDK. Use a small, fast Flash model by default (set in config).
+- **Embeddings:** Gemini embeddings, wrapped behind one function so the provider can be swapped.
+- **Crawler:** for Shopify stores, read products from `/products.json`. Fetch policy and FAQ pages from `sitemap.xml` and `/policies/*`, and convert the HTML to text with the stdlib. Later, add a fallback that reads JSON-LD `Product` and Open Graph data for non-Shopify stores. Respect `robots.txt`, rate limit requests, and cap pages crawled (e.g. 200).
 - **PDF parsing:** a lightweight text extractor (e.g. `pypdf`).
 - **Frontend (landing + setup):** static HTML, plain CSS, minimal vanilla JS. No frontend framework for v1.
 - **Widget:** a single vanilla JS file, no dependencies, rendered inside **Shadow DOM** so it never clashes with the host site's CSS.
@@ -178,8 +178,14 @@ Auth for v1: magic link by email, or even just a secret edit-link per site. Keep
 
 ## 15. Open questions (decide as you build)
 
+### Decided
+- **Shopify first:** M1 targets Shopify stores (`/products.json`). The JSON-LD fallback for other stores comes after M1 works end to end.
+- **Knowledge scope:** products plus policy and FAQ pages. Blog and marketing pages are skipped.
+- **Reference test store:** Minimalist (beminimalist.co), a Shopify cosmetics store. Skip products tagged `hidden` / `__hidden`.
+- **M1 answering:** retrieve, then answer. Gemini function-calling tools (section 7) arrive in M2.
+
+### Still open
 - Final product name and domain.
-- Shopify-only first, or support any site via crawling from day one? (Recommendation: crawl-based works anywhere, with Shopify extras layered on.)
 - Pricing model (flat monthly vs base plus revenue share), to be decided after the pilots.
 - How to measure revenue attribution honestly (UTM or cart-token tagging on chat-originated clicks).
 
