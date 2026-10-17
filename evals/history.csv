@@ -1,0 +1,4 @@
+timestamp,commit,cases_file,model,passed,total,rate
+2026-10-17T12-44-37,2002fe1,minimalist.json,gemini-3.5-flash-lite,21,22,0.955
+2026-10-17T12-45-45,2002fe1,minimalist.json,gemini-3.5-flash-lite,22,22,1.000
+2026-10-17T12-47-32,2002fe1,minimalist.json,gemini-3.5-flash-lite,22,22,1.000

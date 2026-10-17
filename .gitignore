@@ -6,3 +6,6 @@ __pycache__/
 data/
 node_modules/
 .DS_Store
+
+# Eval runs: full answers per run (history.csv is tracked)
+evals/results/
