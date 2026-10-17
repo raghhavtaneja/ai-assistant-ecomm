@@ -30,7 +30,7 @@ A lightweight AI sales assistant widget for D2C websites. The owner gives a webs
 - Handle errors at the edges (network, parsing, LLM calls) with clear messages. Do not swallow exceptions silently.
 
 ## Swappable providers (keep it this way)
-- Each external dependency lives behind exactly one module: `app/llm.py` (chat), `app/embeddings.py` (embeddings), `app/db.py` (storage). Only these modules import the vendor SDK or `sqlite3`.
+- Each external dependency lives behind exactly one module: `app/llm.py` (chat), `app/embeddings.py` (embeddings), `app/db.py` (storage). Only these modules import the vendor SDK or `sqlite3`. The one exception is `app/gemini.py`, which holds the shared Gemini client for `llm.py` and `embeddings.py`.
 - The rest of the code calls their plain functions and passes plain data (dicts, pydantic models, lists of floats). No SDK types leak out.
 - Switching a provider means rewriting one module and updating `app/config.py`. Nothing else changes.
 - Do not add base classes or plugin registries for this. Plain functions with a stable signature are enough until we really have two providers at once.

@@ -18,6 +18,11 @@ class Settings(BaseSettings):
     gemini_api_key: str = ""
     chat_model: str = "gemini-3.8-flash"
     embedding_model: str = "gemini-embedding-2"
+    # 768 keeps vectors small (3 KB each) with little quality loss vs the 3072 default.
+    # Changing it means re-indexing: old and new vectors can't be compared.
+    embedding_dimensions: int = 768
+    embedding_batch_size: int = 100
+    llm_retry_attempts: int = 3
 
     database_path: Path = Path("data/app.db")
     log_level: str = "INFO"
