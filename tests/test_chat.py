@@ -24,6 +24,31 @@ def test_prepare_keeps_only_recent_history(monkeypatch: pytest.MonkeyPatch) -> N
     assert "<shopper_message>\nnew question\n</shopper_message>" in messages[-1].content
 
 
+def test_retrieval_query_adds_previous_shopper_question() -> None:
+    history = [
+        Message(role="user", content="suggest a sunscreen"),
+        Message(role="assistant", content="Try the SPF 50."),
+    ]
+    assert chat.retrieval_query("bigger size of that one?", history) == (
+        "suggest a sunscreen\nbigger size of that one?"
+    )
+    assert chat.retrieval_query("first question", []) == "first question"
+
+
+def test_prepare_searches_with_follow_up_context(monkeypatch: pytest.MonkeyPatch) -> None:
+    searched: list[str] = []
+    monkeypatch.setattr(
+        chat, "search", lambda conn, site_id, q, page_url: searched.append(q) or SearchResults()
+    )
+    history = [Message(role="user", content="suggest a sunscreen")]
+
+    _, messages, _ = chat.prepare(None, SITE, "that one?", history)
+
+    assert searched == ["suggest a sunscreen\nthat one?"]
+    # The model still sees the shopper's actual words, not the search query.
+    assert "<shopper_message>\nthat one?\n</shopper_message>" in messages[-1].content
+
+
 def test_answer_joins_streamed_pieces(monkeypatch: pytest.MonkeyPatch) -> None:
     seen: dict = {}
 

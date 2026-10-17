@@ -84,17 +84,22 @@ def _row_to_site(row: sqlite3.Row) -> Site:
     )
 
 
+def find_site(conn: sqlite3.Connection, url: str) -> Site | None:
+    row = conn.execute("SELECT * FROM sites WHERE url = ?", (url.rstrip("/"),)).fetchone()
+    return _row_to_site(row) if row else None
+
+
 def get_or_create_site(conn: sqlite3.Connection, url: str) -> Site:
     url = url.rstrip("/")
-    row = conn.execute("SELECT * FROM sites WHERE url = ?", (url,)).fetchone()
-    if row is None:
+    site = find_site(conn, url)
+    if site is None:
         conn.execute(
             "INSERT INTO sites (url, public_key, created_at) VALUES (?, ?, ?)",
             (url, secrets.token_urlsafe(16), _now()),
         )
         conn.commit()
-        row = conn.execute("SELECT * FROM sites WHERE url = ?", (url,)).fetchone()
-    return _row_to_site(row)
+        site = find_site(conn, url)
+    return site
 
 
 def mark_crawled(conn: sqlite3.Connection, site_id: int) -> None:

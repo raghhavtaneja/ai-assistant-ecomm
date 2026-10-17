@@ -52,7 +52,10 @@ A lightweight AI sales assistant widget for D2C websites. The owner gives a webs
 
 ## Commands (update as the project grows)
 - Install: `uv sync`
-- Run server: `uv run uvicorn app.main:app --reload`
+- Index a store: `uv run python -m app.cli ingest https://beminimalist.co`
+- Ask (one-shot): `uv run python -m app.cli ask https://beminimalist.co "question" [--page URL] [--sources]`
+- Chat (interactive): `uv run python -m app.cli ask https://beminimalist.co`
+- Run server (from M2): `uv run uvicorn app.main:app --reload`
 - Tests: `uv run pytest`
 - Lint and format: `uv run ruff check . && uv run ruff format .`
 - Evals: `uv run python evals/run_evals.py`
